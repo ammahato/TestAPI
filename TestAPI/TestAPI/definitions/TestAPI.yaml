@@ -1,0 +1,67 @@
+swagger: '2.0'
+info:
+  x-ibm-name: testapi
+  version: 1.0.0
+  title: TestAPI
+schemes:
+  - https
+host: $(catalog.host)
+basePath: /api
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  clientIdHeader:
+    type: apiKey
+    in: header
+    name: X-IBM-Client-Id
+  clientSecretHeader:
+    in: header
+    name: X-IBM-Client-Secret
+    type: apiKey
+security:
+  - {}
+x-ibm-configuration:
+  testable: true
+  enforced: true
+  cors:
+    enabled: true
+  catalogs:
+    apic-dev:
+      properties:
+        runtime-url: $(TARGET_URL)
+    sb:
+      properties:
+        runtime-url: 'http://localhost:4001'
+  assembly:
+    execute:
+      - invoke:
+          target-url: >-
+            http://banka.mybluemix.net/loans/v1/quote?loanAmount=$(request.parameters.loanAmount)&annualInterestRate=$(request.parameters.annualInterestRate)&termInMonths=$(request.parameters.termInMonths)
+    catch: []
+  gateway: datapower-gateway
+paths:
+  /bank:
+    get:
+      responses:
+        '200':
+          description: 200 OK
+      operationId: bankOps
+      parameters:
+        - name: loanAmount
+          type: integer
+          required: true
+          in: query
+          format: int32
+        - name: annualInterestRate
+          type: integer
+          required: true
+          in: query
+          format: int32
+        - name: termInMonths
+          type: integer
+          required: true
+          in: query
+          format: int32
+definitions: {}
